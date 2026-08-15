@@ -1,0 +1,13 @@
+{
+  "name": "Đi Đâu Đây",
+  "short_name": "Đi Đâu",
+  "description": "Lên lịch chuyến đi, lưu địa điểm đẹp và tìm khách sạn giá tốt.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f4ef",
+  "theme_color": "#22674c",
+  "lang": "vi",
+  "icons": [
+    { "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

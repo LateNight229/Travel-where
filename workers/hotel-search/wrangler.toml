@@ -1,0 +1,8 @@
+name = "di-dau-day-hotel-search"
+main = "src/index.ts"
+compatibility_date = "2026-08-14"
+
+[vars]
+# Đổi thành URL GitHub Pages thật, ví dụ:
+# ALLOWED_ORIGIN = "https://ten-github.github.io"
+ALLOWED_ORIGIN = "http://localhost:5173"
