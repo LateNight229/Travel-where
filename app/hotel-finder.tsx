@@ -22,20 +22,25 @@ import {
 } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
 import { formatVnd, searchHotels, type HotelResult, type HotelSearchInput } from "../lib/hotel-provider";
+import { addDaysIso, todayIso } from "../lib/trip-model";
 
-const DEFAULT_SEARCH: HotelSearchInput = {
-  destination: "Đà Nẵng",
-  checkIn: "2026-10-16",
-  checkOut: "2026-10-19",
-  adults: 2,
-  children: 0,
-  minPrice: 500000,
-  maxPrice: 2000000,
-  rating: 4,
-  hotelClass: [3, 4, 5],
-  freeCancellation: false,
-  sort: "value",
-};
+function defaultSearch(initialSearch?: Partial<HotelSearchInput>): HotelSearchInput {
+  const today = todayIso();
+  return {
+    destination: initialSearch?.destination ?? "",
+    checkIn: initialSearch?.checkIn ?? today,
+    checkOut: initialSearch?.checkOut ?? addDaysIso(today, 1),
+    adults: 2,
+    children: 0,
+    minPrice: 500000,
+    maxPrice: 2000000,
+    rating: 4,
+    hotelClass: [3, 4, 5],
+    freeCancellation: false,
+    sort: "value",
+    ...initialSearch,
+  };
+}
 
 function HotelCard({ hotel, shortlisted, onToggle, onSelect }: { hotel: HotelResult; shortlisted: boolean; onToggle: () => void; onSelect: () => void }) {
   return (
@@ -76,8 +81,8 @@ function HotelDetail({ hotel, shortlisted, onClose, onToggle, onConfirm }: { hot
   );
 }
 
-export default function HotelFinder({ shortlist, onShortlistChange, onConfirmHotel }: { shortlist: HotelResult[]; onShortlistChange: (hotel: HotelResult) => void; onConfirmHotel: (hotel: HotelResult) => void }) {
-  const [form, setForm] = useState(DEFAULT_SEARCH);
+export default function HotelFinder({ shortlist, initialSearch, onShortlistChange, onConfirmHotel }: { shortlist: HotelResult[]; initialSearch?: Partial<HotelSearchInput>; onShortlistChange: (hotel: HotelResult) => void; onConfirmHotel: (hotel: HotelResult) => void }) {
+  const [form, setForm] = useState<HotelSearchInput>(() => defaultSearch(initialSearch));
   const [results, setResults] = useState<HotelResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);

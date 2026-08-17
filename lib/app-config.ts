@@ -13,22 +13,10 @@ type ViteImportMeta = ImportMeta & {
   };
 };
 
-function readNextEnv(
-  name:
-    | "NEXT_PUBLIC_SUPABASE_URL"
-    | "NEXT_PUBLIC_SUPABASE_ANON_KEY"
-    | "NEXT_PUBLIC_HOTEL_API_URL",
-): string {
+function readNextEnv(name: "NEXT_PUBLIC_SUPABASE_URL" | "NEXT_PUBLIC_SUPABASE_ANON_KEY" | "NEXT_PUBLIC_HOTEL_API_URL"): string {
   if (typeof process === "undefined") return "";
-
-  if (name === "NEXT_PUBLIC_SUPABASE_URL") {
-    return process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  }
-
-  if (name === "NEXT_PUBLIC_SUPABASE_ANON_KEY") {
-    return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
-  }
-
+  if (name === "NEXT_PUBLIC_SUPABASE_URL") return process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  if (name === "NEXT_PUBLIC_SUPABASE_ANON_KEY") return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
   return process.env.NEXT_PUBLIC_HOTEL_API_URL ?? "";
 }
 

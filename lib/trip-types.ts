@@ -20,6 +20,7 @@ export type Place = {
 export type TripDay = {
   id: string;
   label: string;
+  dateISO: string;
   date: string;
   shortDate: string;
   places: Place[];
@@ -27,13 +28,24 @@ export type TripDay = {
 
 export type TripDocument = {
   id: string;
+  position: number;
   title: string;
   destination: string;
+  startDate: string;
+  endDate: string;
   dateRange: string;
   travelers: number;
   updatedAt: string;
   days: TripDay[];
   hotelShortlist: HotelResult[];
+};
+
+export type TripSettingsInput = {
+  title: string;
+  destination: string;
+  startDate: string;
+  endDate: string;
+  travelers: number;
 };
 
 export type NewPlaceInput = {

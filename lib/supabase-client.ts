@@ -29,12 +29,16 @@ export async function saveTripDocument(userId: string, tripId: string, trip: unk
   if (error) throw error;
 }
 
-export async function loadLatestTripDocument(userId: string): Promise<{ tripId: string; document: unknown } | null> {
+export async function loadTripDocuments(userId: string): Promise<Array<{ tripId: string; document: unknown }>> {
   const supabase = getSupabaseClient();
-  if (!supabase) return null;
-  const { data, error } = await supabase.from("trip_documents").select("trip_id, document").eq("owner_id", userId).order("updated_at", { ascending: false }).limit(1).maybeSingle();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("trip_documents")
+    .select("trip_id, document")
+    .eq("owner_id", userId)
+    .order("updated_at", { ascending: false });
   if (error) throw error;
-  return data ? { tripId: data.trip_id as string, document: data.document } : null;
+  return (data ?? []).map((item) => ({ tripId: item.trip_id as string, document: item.document }));
 }
 
 export async function uploadTripPhoto(userId: string, tripId: string, file: File): Promise<string> {
