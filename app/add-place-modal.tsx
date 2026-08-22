@@ -3,6 +3,7 @@
 import { Camera, ImagePlus, Link2, MapPin, Plus, Upload, X } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
 import type { NewPlaceInput, Place, PlaceType, TripDay } from "../lib/trip-types";
+import Time24Input from "./time-24-input";
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&q=84";
 
@@ -50,7 +51,7 @@ export default function AddPlaceModal({ days, defaultDayId, initialPlace, onClos
             <label className="field wide"><span>Địa chỉ hoặc link Google Maps</span><div className="field-icon"><MapPin size={16} /><input name="subtitle" required defaultValue={initialPlace?.subtitle} placeholder="Nhập địa chỉ hoặc dán link" /></div></label>
             <div className="field wide"><span>Phân loại</span><div className="category-picker">{(["checkin", "food", "coffee", "hotel"] as PlaceType[]).map((value) => <button type="button" key={value} className={type === value ? "active" : ""} onClick={() => setType(value)}>{value === "checkin" ? "Check-in" : value === "food" ? "Ăn uống" : value === "coffee" ? "Cà phê" : "Khách sạn"}</button>)}</div></div>
             <label className="field"><span>Ngày</span><select name="dayId" defaultValue={defaultDayId}>{days.map((day) => <option key={day.id} value={day.id}>{day.label} · {day.shortDate}</option>)}</select></label>
-            <label className="field"><span>Thời gian</span><input name="time" type="time" defaultValue={initialPlace?.time ?? "09:00"} required /></label>
+            <label className="field"><span>Thời gian (24 giờ)</span><Time24Input name="time" defaultValue={initialPlace?.time ?? "09:00"} label="Thời gian" /></label>
             <label className="field"><span>Ở lại khoảng</span><select name="duration" defaultValue={initialPlace?.duration ?? "1 giờ"}><option>30 phút</option><option>45 phút</option><option>1 giờ</option><option>1 giờ 30 phút</option><option>2 giờ</option><option>2 giờ 30 phút</option><option>3 giờ</option><option>4 giờ</option></select></label>
             <label className="field"><span>Ảnh từ đường dẫn</span><div className="field-icon"><Link2 size={16} /><input value={imageUrl} onChange={(event) => setImageUrl(event.target.value)} placeholder="https://…" /></div></label>
             <label className="field wide"><span>Ghi chú</span><textarea name="note" rows={3} defaultValue={initialPlace?.note} placeholder="Món nên thử, giờ đẹp để chụp ảnh…" /></label>

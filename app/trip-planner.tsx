@@ -39,6 +39,7 @@ import ScheduleHotelModal, { type HotelScheduleInput } from "./schedule-hotel-mo
 import TripSettingsModal from "./trip-settings-modal";
 import { appConfig } from "../lib/app-config";
 import type { HotelResult } from "../lib/hotel-provider";
+import { createId } from "../lib/id";
 import {
   addDaysIso,
   buildTripDays,
@@ -50,6 +51,7 @@ import {
 } from "../lib/trip-model";
 import { getSupabaseClient, loadTripDocuments, saveTripDocument, uploadTripPhoto } from "../lib/supabase-client";
 import type { NewPlaceInput, Place, PlaceType, TripDocument, TripSettingsInput } from "../lib/trip-types";
+import { compareTime24, normalizeTime24 } from "../lib/time-24";
 
 type View = "plan" | "discover" | "map" | "today";
 type AuthState = "loading" | "signed-out" | "signed-in" | "demo";
@@ -338,17 +340,18 @@ export default function TripPlannerApp() {
 
   const savePlace = async (input: NewPlaceInput) => {
     if (!activeTrip) return;
+    const time = normalizeTime24(input.time);
     let image = input.image;
     if (input.imageFile) image = appConfig.demoMode ? await imageToDataUrl(input.imageFile) : await uploadTripPhoto(userId, activeTrip.id, input.imageFile);
     if (editingPlace) {
       const changedDay = editingPlace.dayId !== input.dayId;
-      const updated: Place = { ...editingPlace.place, title: input.title, subtitle: input.subtitle, type: input.type, time: input.time, duration: input.duration, note: input.note, image };
+      const updated: Place = { ...editingPlace.place, title: input.title, subtitle: input.subtitle, type: input.type, time, duration: input.duration, note: input.note, image };
       updateActiveTrip((trip) => ({
         ...trip,
         days: trip.days.map((day) => {
           if (changedDay && day.id === editingPlace.dayId) return { ...day, places: day.places.filter((place) => place.id !== editingPlace.place.id) };
-          if (changedDay && day.id === input.dayId) return { ...day, places: [...day.places, updated].sort((a, b) => a.time.localeCompare(b.time)) };
-          if (!changedDay) return { ...day, places: day.places.map((place) => place.id === editingPlace.place.id ? updated : place) };
+          if (changedDay && day.id === input.dayId) return { ...day, places: [...day.places, updated].sort((a, b) => compareTime24(a.time, b.time)) };
+          if (!changedDay) return { ...day, places: day.places.map((place) => place.id === editingPlace.place.id ? updated : place).sort((a, b) => compareTime24(a.time, b.time)) };
           return day;
         }),
       }));
@@ -357,17 +360,17 @@ export default function TripPlannerApp() {
       return;
     }
     const place: Place = {
-      id: crypto.randomUUID(),
+      id: createId(),
       title: input.title,
       subtitle: input.subtitle,
       type: input.type,
-      time: input.time,
+      time,
       duration: input.duration,
       note: input.note,
       image,
       location: { lat: 16.0544, lng: 108.2461 },
     };
-    updateActiveTrip((trip) => ({ ...trip, days: trip.days.map((day) => day.id === input.dayId ? { ...day, places: [...day.places, place].sort((a, b) => a.time.localeCompare(b.time)) } : day) }));
+    updateActiveTrip((trip) => ({ ...trip, days: trip.days.map((day) => day.id === input.dayId ? { ...day, places: [...day.places, place].sort((a, b) => compareTime24(a.time, b.time)) } : day) }));
     setActiveDayId(input.dayId);
     setToast(`Đã thêm địa điểm vào ${activeTrip.title}`);
   };
@@ -432,7 +435,7 @@ export default function TripPlannerApp() {
       title: `Nhận phòng ${hotel.name}`,
       subtitle: hotel.address,
       type: "hotel",
-      time: input.time,
+      time: normalizeTime24(input.time, "14:00"),
       duration: "45 phút",
       note: `${hotel.reason}. Giá tham khảo khi tìm: ${hotel.pricePerNight.toLocaleString("vi-VN")}₫/đêm.`,
       image: hotel.image,
@@ -440,7 +443,7 @@ export default function TripPlannerApp() {
     };
     updateTrip(targetTrip.id, (trip) => ({
       ...trip,
-      days: trip.days.map((day) => day.id === targetDay.id ? { ...day, places: [...day.places, place].sort((a, b) => a.time.localeCompare(b.time)) } : day),
+      days: trip.days.map((day) => day.id === targetDay.id ? { ...day, places: [...day.places, place].sort((a, b) => compareTime24(a.time, b.time)) } : day),
       hotelShortlist: trip.hotelShortlist.some((item) => item.id === hotel.id) ? trip.hotelShortlist : [...trip.hotelShortlist, hotel],
     }));
     setActiveTripId(targetTrip.id);

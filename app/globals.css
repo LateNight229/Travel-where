@@ -261,6 +261,12 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .field-icon svg { flex: 0 0 auto; color: #9aa09b; }
 .field-icon input, .field-icon select { border: 0; }
 .field-icon select { width: 100%; min-width: 0; height: 40px; color: var(--ink); background: transparent; font-size: 12px; }
+.time-24-input { height: 42px; display: grid; grid-template-columns: auto minmax(46px,1fr) auto minmax(46px,1fr) auto; align-items: center; overflow: hidden; border: 1px solid #dddfd8; border-radius: 11px; color: var(--ink); background: white; font-variant-numeric: tabular-nums; }
+.time-24-input > svg { margin-left: 11px; color: #9aa09b; }
+.field .time-24-input > select { height: 40px; padding: 0 7px; border: 0; border-radius: 0; outline: 0; color: var(--ink); background: transparent; font-size: 13px; font-weight: 750; text-align: center; cursor: pointer; }
+.field .time-24-input > select:focus-visible { background: var(--green-soft); box-shadow: inset 0 0 0 2px #89af99; }
+.time-24-separator { color: #7c857f; font-size: 14px; font-weight: 850; }
+.time-24-badge { margin-right: 9px; padding: 3px 5px; border-radius: 6px; color: var(--green); background: var(--green-soft); font-size: 8px; font-weight: 850; letter-spacing: .03em; text-transform: uppercase; }
 .category-picker { display: grid; grid-template-columns: repeat(4,1fr); gap: 7px; }
 .category-picker button { min-height: 39px; border: 1px solid #dddfd8; border-radius: 10px; color: #758078; background: white; font-size: 10px; font-weight: 750; cursor: pointer; }
 .category-picker button.active { color: var(--green); border-color: #90b49e; background: var(--green-soft); }

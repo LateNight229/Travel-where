@@ -1,4 +1,6 @@
 import type { TripDay, TripDocument, TripSettingsInput } from "./trip-types";
+import { createId } from "./id";
+import { compareTime24, normalizeTime24 } from "./time-24";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -61,12 +63,14 @@ export function buildTripDays(startDate: string, endDate: string, currentDays: T
     const dateISO = addDaysIso(startDate, index);
     const current = currentDays[index];
     return {
-      id: current?.id ?? crypto.randomUUID(),
+      id: current?.id ?? createId(),
       label: `Ngày ${index + 1}`,
       dateISO,
       date: formatLongDate(dateISO),
       shortDate: formatShortDate(dateISO),
-      places: Array.isArray(current?.places) ? current.places : [],
+      places: (Array.isArray(current?.places) ? current.places : [])
+        .map((place) => ({ ...place, time: normalizeTime24(place.time) }))
+        .sort((first, second) => compareTime24(first.time, second.time)),
     };
   });
 }
@@ -77,7 +81,7 @@ export function createTripDocument(position: number, settings?: Partial<TripSett
   const endDate = requestedEnd < startDate ? startDate : requestedEnd;
   const title = settings?.title?.trim() || `Chuyến đi ${position}`;
   return {
-    id: crypto.randomUUID(),
+    id: createId(),
     position,
     title,
     destination: settings?.destination?.trim() || "",
@@ -111,7 +115,7 @@ export function normalizeTripDocument(value: unknown, fallbackId: string, positi
   const days = buildTripDays(startDate, endDate, legacyDays);
 
   return {
-    id: fallbackId || (typeof document.id === "string" && document.id ? document.id : crypto.randomUUID()),
+    id: fallbackId || (typeof document.id === "string" && document.id ? document.id : createId()),
     position: Math.max(1, Number(document.position) || position),
     title: typeof document.title === "string" && document.title.trim() ? document.title.trim() : `Chuyến đi ${position}`,
     destination: typeof document.destination === "string" ? document.destination : "",

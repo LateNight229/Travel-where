@@ -1,9 +1,10 @@
 "use client";
 
-import { BedDouble, CalendarDays, Clock3, MapPin, X } from "lucide-react";
+import { BedDouble, CalendarDays, MapPin, X } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
 import type { HotelResult } from "../lib/hotel-provider";
 import type { TripDocument } from "../lib/trip-types";
+import Time24Input from "./time-24-input";
 
 export type HotelScheduleInput = {
   tripId: string;
@@ -58,7 +59,7 @@ export default function ScheduleHotelModal({
           <div className="form-grid">
             <label className="field wide"><span>Thêm vào chuyến đi nào?</span><select value={tripId} onChange={(event) => changeTrip(event.target.value)}>{trips.map((trip) => <option value={trip.id} key={trip.id}>{trip.title} · {trip.dateRange}</option>)}</select></label>
             <label className="field"><span>Ngày nhận phòng trong kế hoạch</span><div className="field-icon"><CalendarDays size={16} /><select value={dayId} onChange={(event) => setDayId(event.target.value)}>{selectedTrip?.days.map((day) => <option value={day.id} key={day.id}>{day.label} · {day.shortDate}</option>)}</select></div></label>
-            <label className="field"><span>Giờ nhận phòng</span><div className="field-icon"><Clock3 size={16} /><input name="time" type="time" defaultValue="14:00" required /></div></label>
+            <label className="field"><span>Giờ nhận phòng (24 giờ)</span><Time24Input name="time" defaultValue="14:00" label="Giờ nhận phòng" /></label>
           </div>
           {error ? <p className="form-error trip-form-error">{error}</p> : null}
           <div className="modal-footer"><span>Khách sạn chỉ được thêm vào timeline của chuyến bạn chọn.</span><div><button type="button" className="secondary-button" onClick={onClose}>Hủy</button><button type="submit" className="primary-button"><BedDouble size={16} /> Thêm vào kế hoạch</button></div></div>

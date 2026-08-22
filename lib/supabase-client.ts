@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { appConfig } from "./app-config";
+import { createId } from "./id";
 
 let client: SupabaseClient | null = null;
 
@@ -45,7 +46,7 @@ export async function uploadTripPhoto(userId: string, tripId: string, file: File
   const supabase = getSupabaseClient();
   if (!supabase) return URL.createObjectURL(file);
   const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-");
-  const path = `${userId}/${tripId}/${crypto.randomUUID()}-${safeName}`;
+  const path = `${userId}/${tripId}/${createId()}-${safeName}`;
   const { error } = await supabase.storage.from("trip-photos").upload(path, file, { cacheControl: "31536000", upsert: false });
   if (error) throw error;
   const { data, error: signedUrlError } = await supabase.storage.from("trip-photos").createSignedUrl(path, 60 * 60 * 24 * 365);
